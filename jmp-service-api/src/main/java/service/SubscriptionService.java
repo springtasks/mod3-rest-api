@@ -2,7 +2,6 @@ package service;
 
 import java.time.LocalDate;
 import java.util.List;
-
 import com.example.dto.User;
 import com.example.dto.Subscription;
 

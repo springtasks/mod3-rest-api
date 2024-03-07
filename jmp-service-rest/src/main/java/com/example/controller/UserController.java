@@ -1,6 +1,8 @@
 package com.example.controller;
 
 import example.service.impl.UserServiceImpl;
+import io.micrometer.core.ipc.http.HttpSender;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import com.example.dto.User;
@@ -10,10 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.dto.UserRequestDto;
 import com.example.dto.UserResponseDto;
-
-
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "http://localhost:8081")
@@ -30,6 +31,7 @@ public class UserController {
 
     @PostMapping("/users")
     public ResponseEntity<UserResponseDto> createUser(@RequestBody UserRequestDto requestDto) {
+        logger.log(Level.INFO, "Request - " + requestDto + "Method: " + HttpSender.Method.POST);
         try {
             User user = convertToUser(requestDto);
             User response = userService.createUser(user.getName(), user.getSurname(), user.getBirthday());
@@ -46,6 +48,34 @@ public class UserController {
             return new ResponseEntity<>(convertFromUsers(response), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/users/{id}")
+    public ResponseEntity<UserResponseDto> getUserById(@PathVariable("id") long id) {
+        logger.log(Level.INFO, "Request - " + id + "Method: " + HttpSender.Method.GET);
+        Optional<User> userData = userService.getUser(id);
+
+        return userData.map(user -> new ResponseEntity<>(convertFromUser(user),
+                HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @PutMapping("/users/{id}")
+    public ResponseEntity<UserResponseDto> updateUser(@PathVariable("id") long id, @RequestBody User user) {
+        logger.log(Level.INFO, "Request - " + id + "Method: " + HttpSender.Method.PUT);
+        Optional<User> userData = userService.updateUser(id, user.getName(), user.getSurname(), user.getBirthday());
+
+            return userData.map(u -> new ResponseEntity<>(convertFromUser(u),
+                    HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<HttpStatus> deleteUser(@PathVariable("id") long id) {
+        try {
+            userService.deleteUser(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

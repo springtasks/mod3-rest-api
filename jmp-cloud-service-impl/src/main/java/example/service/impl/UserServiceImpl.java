@@ -1,13 +1,10 @@
 package example.service.impl;
 
 import com.example.dto.User;
-import com.example.service.UserService;
+import service.UserService;
 import example.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -30,13 +27,13 @@ public UserServiceImpl(UserRepository userRepository) {
 
 
     @Override
-    public User updateUser(Long userId, String userName, String lastName, LocalDate birthDate) {
+    public Optional<User> updateUser(Long userId, String userName, String lastName, LocalDate birthDate) {
         Optional<User> result = userRepository.findById(userId);
         if(result.isPresent()) {
             userRepository.deleteById(userId);
-            return userRepository.save(User.builder().name(userName).surname(lastName).birthday(birthDate).build());
+            return Optional.of(userRepository.save(User.builder().name(userName).surname(lastName).birthday(birthDate).build()));
         }
-        return null;
+        return Optional.empty();
     }
 
     @Override
@@ -46,8 +43,8 @@ public UserServiceImpl(UserRepository userRepository) {
 
 
     @Override
-    public User getUser(Long userId) {
-        return userRepository.findById(userId).orElse(null);
+    public Optional<User> getUser(Long userId) {
+        return userRepository.findById(userId);
     }
 
 
