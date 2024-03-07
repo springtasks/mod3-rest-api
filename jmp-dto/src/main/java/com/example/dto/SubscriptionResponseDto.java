@@ -2,6 +2,8 @@ package com.example.dto;
 
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -10,6 +12,6 @@ import lombok.*;
 public class SubscriptionResponseDto {
 
     private Long id;
-    private Long userId;
-    private String startDate;
+    private String userName;
+    private LocalDate startDate;
 }

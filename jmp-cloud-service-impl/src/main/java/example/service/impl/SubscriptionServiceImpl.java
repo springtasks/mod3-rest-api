@@ -6,6 +6,8 @@ import service.SubscriptionService;
 import example.repository.SubscriptionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.swing.text.html.Option;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -21,19 +23,19 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public Subscription createSubscription(User user, LocalDate startDate) {
-        return subscriptionRepository.save( Subscription.builder().userName(user.getName()).startDate(startDate).build());
+    public Subscription createSubscription(String userName, LocalDate startDate) {
+        return subscriptionRepository.save( Subscription.builder().userName(userName).startDate(startDate).build());
     }
 
 
     @Override
-    public Subscription updateSubscription(Long subscriptionId, User user, LocalDate startDate) {
+    public Optional<Subscription> updateSubscription(Long subscriptionId, String userName, LocalDate startDate) {
         Optional<Subscription> result = subscriptionRepository.findById(subscriptionId);
         if(result.isPresent()) {
             subscriptionRepository.deleteById(subscriptionId);
-            return subscriptionRepository.save(Subscription.builder().userName(user.getName()).startDate(startDate).build());
+            return Optional.of(subscriptionRepository.save(Subscription.builder().userName(userName).startDate(startDate).build()));
         }
-        return null;
+        return Optional.empty();
     }
 
 
@@ -44,8 +46,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public Subscription getSubscription(Long subscriptionId) {
-        return subscriptionRepository.findById(subscriptionId).orElse(null);
+    public Optional<Subscription> getSubscription(Long subscriptionId) {
+        return subscriptionRepository.findById(subscriptionId);
     }
 
     @Override

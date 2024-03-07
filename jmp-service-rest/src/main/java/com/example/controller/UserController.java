@@ -1,7 +1,6 @@
 package com.example.controller;
 
 import example.service.impl.UserServiceImpl;
-import io.micrometer.core.ipc.http.HttpSender;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,7 +30,7 @@ public class UserController {
 
     @PostMapping("/users")
     public ResponseEntity<UserResponseDto> createUser(@RequestBody UserRequestDto requestDto) {
-        logger.log(Level.INFO, "Request - " + requestDto + "Method: " + HttpSender.Method.POST);
+        logger.log(Level.INFO, "Request - " + requestDto + "Method: POST ");
         try {
             User user = convertToUser(requestDto);
             User response = userService.createUser(user.getName(), user.getSurname(), user.getBirthday());
@@ -53,7 +52,7 @@ public class UserController {
 
     @GetMapping("/users/{id}")
     public ResponseEntity<UserResponseDto> getUserById(@PathVariable("id") long id) {
-        logger.log(Level.INFO, "Request - " + id + "Method: " + HttpSender.Method.GET);
+        logger.log(Level.INFO, "Request - " + id + "Method: GET ");
         Optional<User> userData = userService.getUser(id);
 
         return userData.map(user -> new ResponseEntity<>(convertFromUser(user),
@@ -62,7 +61,7 @@ public class UserController {
 
     @PutMapping("/users/{id}")
     public ResponseEntity<UserResponseDto> updateUser(@PathVariable("id") long id, @RequestBody User user) {
-        logger.log(Level.INFO, "Request - " + id + "Method: " + HttpSender.Method.PUT);
+        logger.log(Level.INFO, "Request - " + id + "Method: PUT " );
         Optional<User> userData = userService.updateUser(id, user.getName(), user.getSurname(), user.getBirthday());
 
             return userData.map(u -> new ResponseEntity<>(convertFromUser(u),
